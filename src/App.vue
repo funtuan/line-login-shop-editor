@@ -1,16 +1,50 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
+    <div id="nav" v-if="logged">
+      <router-link to="/">店家編輯</router-link> |
+      <router-link to="/tags">標籤編輯</router-link>
     </div>
-    <router-view/>
+    <router-view v-if="logged"/>
+    <div v-if="!logged" class="not-logged">
+      請點擊 <span class="LINE" @click="login()">LINE Login</span> 登入
+    </div>
   </div>
 </template>
 
+
+<script>
+import axios from 'axios';
+axios.defaults.withCredentials = true;
+export default {
+  data: () => {
+    return {
+      logged: true,
+    };
+  },
+  created: function() {
+    this.checkLogin();
+  },
+  methods: {
+    checkLogin() {
+      axios.get(`${this.APIHOST}/api/checkLogin`)
+        .then((response) => {
+          this.logged = response.data.success;
+          console.log(this.logged);
+        });
+    },
+
+    login() {
+      window.location = `${this.APIHOST}/login`;
+    },
+  }
+};
+</script>
+
 <style>
+@import url(https://fonts.googleapis.com/earlyaccess/notosanstc.css);
+
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: ‘Noto Sans TC’, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
@@ -28,5 +62,17 @@
 
 #nav a.router-link-exact-active {
   color: #42b983;
+}
+
+.LINE {
+  background: #34b813;
+  padding: 10px;
+  color: #fff;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.not-logged {
+  margin-top: 23%;
 }
 </style>
