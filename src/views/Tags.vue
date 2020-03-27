@@ -1,5 +1,5 @@
 <template>
-  <div class="shops">
+  <div class="shops" v-loading.fullscreen.lock="fullscreenLoading">
     <transition-group name="el-zoom-in-top">
       <div v-for="(tag, index) in tagList"  v-bind:key="tag._id" >
         <el-card class="box-card">
@@ -50,6 +50,8 @@ export default {
       tagListDialog: true,
 
       form: {},
+
+      fullscreenLoading: false,
     };
   },
   created: function() {
@@ -57,9 +59,11 @@ export default {
   },
   methods: {
     deleteTag(_id, index) {
-      this.list.splice(index, 1);
-      axios.delete(`${this.APIHOST}/api/shop/${_id}`)
+      this.tagList.splice(index, 1);
+      this.fullscreenLoading = true;
+      axios.delete(`${this.APIHOST}/api/tag/${_id}`)
         .then((response) => {
+          this.fullscreenLoading = false;
         });
     },
     
@@ -80,8 +84,10 @@ export default {
     putTag(tag) {
       delete tag.changeRecord;
       delete tag.__v;
+      this.fullscreenLoading = true;
       axios.put(`${this.APIHOST}/api/tag`, tag)
         .then((response) => {
+          this.fullscreenLoading = false;
           this.editDialog = false;
           this.getTagList();
         });
@@ -91,16 +97,20 @@ export default {
       delete tag.changeRecord;
       delete tag.__v;
       delete tag._id;
+      this.fullscreenLoading = true;
       axios.post(`${this.APIHOST}/api/tag`, tag)
         .then((response) => {
+          this.fullscreenLoading = false;
           this.editDialog = false;
           this.getTagList();
         });
     },
   
     getTagList() {
+      this.fullscreenLoading = true;
       axios.get(`${this.APIHOST}/api/tag`)
         .then((response) => {
+          this.fullscreenLoading = false;
           this.tagList = response.data;
         });
     },

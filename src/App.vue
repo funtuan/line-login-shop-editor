@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" v-loading.fullscreen.lock="fullscreenLoading">
     <div id="nav" v-if="logged">
       <router-link to="/">店家編輯</router-link> |
       <router-link to="/tags">標籤編輯</router-link>
@@ -19,6 +19,8 @@ export default {
   data: () => {
     return {
       logged: true,
+
+      fullscreenLoading: false,
     };
   },
   created: function() {
@@ -26,10 +28,12 @@ export default {
   },
   methods: {
     checkLogin() {
+      this.fullscreenLoading = true;
       axios.get(`${this.APIHOST}/api/checkLogin`)
         .then((response) => {
           this.logged = response.data.success;
           console.log(this.logged);
+          this.fullscreenLoading = false;
         });
     },
 

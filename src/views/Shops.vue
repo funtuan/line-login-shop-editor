@@ -1,5 +1,5 @@
 <template>
-  <div class="shops">
+  <div class="shops" v-loading.fullscreen.lock="fullscreenLoading">
     <transition-group name="el-zoom-in-top">
       <div v-for="(shop, index) in list"  v-bind:key="shop._id" >
         <el-card class="box-card">
@@ -69,6 +69,8 @@ export default {
       tagList: [],
 
       form: {},
+
+      fullscreenLoading: false,
     };
   },
   created: function() {
@@ -78,8 +80,10 @@ export default {
   methods: {
     deleteShop(_id, index) {
       this.list.splice(index, 1);
+      this.fullscreenLoading = true;
       axios.delete(`${this.APIHOST}/api/shop/${_id}`)
         .then((response) => {
+          this.fullscreenLoading = false;
         });
     },
 
@@ -100,8 +104,10 @@ export default {
     putShop(shop) {
       delete shop.changeRecord;
       delete shop.__v;
+      this.fullscreenLoading = true;
       axios.put(`${this.APIHOST}/api/shop`, shop)
         .then((response) => {
+          this.fullscreenLoading = false;
           this.editDialog = false;
           this.getShopList();
         });
@@ -111,23 +117,29 @@ export default {
       delete shop.changeRecord;
       delete shop.__v;
       delete shop._id;
+      this.fullscreenLoading = true;
       axios.post(`${this.APIHOST}/api/shop`, shop)
         .then((response) => {
+          this.fullscreenLoading = false;
           this.editDialog = false;
           this.getShopList();
         });
     },
 
     getShopList() {
+      this.fullscreenLoading = true;
       axios.get(`${this.APIHOST}/api/shop`)
         .then((response) => {
+          this.fullscreenLoading = false;
           this.list = response.data;
         });
     },
 
     getTagList() {
+      this.fullscreenLoading = true;
       axios.get(`${this.APIHOST}/api/tag`)
         .then((response) => {
+          this.fullscreenLoading = false;
           this.tagList = response.data;
         });
     },
